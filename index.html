@@ -1,0 +1,37 @@
+<html>
+<header><title>Apartment Temperatures</title><header>
+<body>
+Hello, today is <?php echo date('l, F jS, Y'); ?>.
+
+<?php
+$servername="localhost";
+$username="root";
+$password="Jaybird786!";
+$dbname="temperatures";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+	die("Connection failed: " . $conn->conect_error);
+}
+
+$sql = "SELECT id, temp, ts FROM temps";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+	echo "<table><tr><th>Temp Data</th></tr>";
+	
+	// output data of each row
+	while($row = $result->fetch_assoc()) {
+		echo "<tr><td>".$row["id"]."&nbsp;</td><td>".$row["temp"]."&nbsp;&nbsp;&nbsp;&nbsp;".$row["ts"]."</td></tr>";
+	}
+	echo "</table>";
+} else {
+	echo "0 result";
+}
+$conn->close(); 
+?>
+</body>
+</html>
