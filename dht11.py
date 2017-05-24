@@ -3,7 +3,6 @@ import time
 from datetime import datetime
 import tweepy
 import pymysql
-import MySQLdb
 import glob
 
 # Global Variables
@@ -12,9 +11,9 @@ import glob
 def log_temperature( temp ):
         temperature = str(temp)
         connection = pymysql.connect(host='localhost',
-                                     user='root',
-                                     password='Jaybird786!',
-                                     db='temperatures',
+                                     user='******',
+                                     password='******',
+                                     db='******',
                                      charset='utf8mb4',
                                      cursorclass=pymysql.cursors.DictCursor)
 
@@ -29,10 +28,10 @@ def log_temperature( temp ):
         return;
 
 # Twitter Credentials
-API_KEY = 'vP28AnmyCD29SaMTecreijLFo'
-API_SECRET = 'zbHl6f5a3YljPOPwLmLE9NwXkoNvlslnDqMga2fbtyLZRly7fU'
-ACCESS_TOKEN = '865800834235342850-HoJkGqcHbckVoEDT2z0Qe9CgEAlHxYB'
-ACCESS_TOKEN_SECRET = 'YNvFKTJ6sCV69vwD1AnyxUaNSISpYEg2VbhgVSOdh67Mg'
+API_KEY = '******'
+API_SECRET = '******'
+ACCESS_TOKEN = '******'
+ACCESS_TOKEN_SECRET = '******'
 
 auth = tweepy.OAuthHandler(API_KEY, API_SECRET)
 auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
