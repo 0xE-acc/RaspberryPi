@@ -1,10 +1,34 @@
-#DHT11 Temp and Humidity Sensor 
-
 import RPi.GPIO as GPIO
 import time
 from datetime import datetime
 import tweepy
+import pymysql
+import MySQLdb
+import glob
 
+# Global Variables
+
+# Store temp in database
+def log_temperature( temp ):
+        temperature = str(temp)
+        connection = pymysql.connect(host='localhost',
+                                     user='root',
+                                     password='Jaybird786!',
+                                     db='temperatures',
+                                     charset='utf8mb4',
+                                     cursorclass=pymysql.cursors.DictCursor)
+
+        try:
+                with connection.cursor() as cursor:
+                        cursor.execute("""INSERT INTO temps(temp) VALUES(%s)""",(temperature))
+                        connection.commit()
+        except:
+                connection.rollback()
+        
+        connection.close()
+        return;
+
+# Twitter Credentials
 API_KEY = 'vP28AnmyCD29SaMTecreijLFo'
 API_SECRET = 'zbHl6f5a3YljPOPwLmLE9NwXkoNvlslnDqMga2fbtyLZRly7fU'
 ACCESS_TOKEN = '865800834235342850-HoJkGqcHbckVoEDT2z0Qe9CgEAlHxYB'
@@ -84,7 +108,7 @@ def read_dht11_dat():
 			else:
 				continue
 	if len(lengths) != 40:
-		print "Data not good, skip"
+		print ("Data not good, skip")
 		return False
 
 	shortest_pull_up = min(lengths)
@@ -112,25 +136,26 @@ def read_dht11_dat():
 #	print the_bytes
 	checksum = (the_bytes[0] + the_bytes[1] + the_bytes[2] + the_bytes[3]) & 0xFF
 	if the_bytes[4] != checksum:
-		print "Data not good, skip"
+		print ("Data not good, skip")
 		return False
 
 	return the_bytes[0], the_bytes[2]
 
 def main():
-#	print "Raspberry Pi wiringPi DHT11 Temperature test program\n"
-#	while True:
-		result = read_dht11_dat()
-		if result:
-			humidity, celsius = result
-			temperature = ((celsius * 9) / 5) + 32 
-			print "Humidity: %s%%,  Temperature: %s F`" % (humidity, temperature)
+                result = read_dht11_dat()
 
-			temperature = str(temperature)
-			humidity = str(humidity)
-#			time = datetime.now().strftime('%-I:%M')
-			api.update_status("Apartment Conditions: " + temperature + " degrees and " + humidity + "% humidity")
-#		time.sleep(1)
+                if result:
+                        humidity, celsius = result
+                        temperature = ((celsius * 9) / 5) + 32 
+                        print ("Humidity: %s%%,  Temperature: %s F`" % (humidity, temperature))
+
+                        # Store temp in database
+                        log_temperature(temperature)
+                        temperature = str(temperature)
+                        humidity = str(humidity)
+
+                        # Tweet temp and humidity
+                        api.update_status("Apartment Conditions: " + temperature + " degrees and " + humidity + "% humidity")
 
 def destroy():
 	GPIO.cleanup()
@@ -139,4 +164,4 @@ if __name__ == '__main__':
 	try:
 		main()
 	except KeyboardInterrupt:
-destroy()
+		destroy()
